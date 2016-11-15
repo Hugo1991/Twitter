@@ -38,19 +38,20 @@ class mapreducetwitter(MRJob):
 					for linea in fichero:
 						palabraFichero=linea.split('\t')[0]
 						valor=linea.split('\t')[1][:-1]
-						if (palabra == palabraFichero):
+						if(palabra == palabraFichero):
 							yield str(json.dumps(region)[1:-1]),int(valor)
 							#print (json.dumps(region)[1:-1]),palabra, palabraFichero, valor
 							
 					fichero.close()
-
+	def combiner(self, key, values):
+		
+		 yield key, sum(values)
 	def reducer(self, key, values):
-		print "asdasd"
-		#if(key[:1]=="#"):
-		#	yield key,values
-		#	print "hastag"
-		#else:
-	        yield key, values
+		if(key[:1]=="#"):
+			dic={key,sum(values)}
+			dic = dict(sorted(dic.iteritems(), key=operator.itemgetter(1), reverse=True)[:10])
+		else:
+	        	yield key, sum(values)
 
 if __name__ == '__main__':
     mapreducetwitter.run()
